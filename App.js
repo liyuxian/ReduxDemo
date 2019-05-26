@@ -7,23 +7,47 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View ,Button} from 'react-native';
+import { clickButtonAction } from "./src/actions";
+import { myStore } from "./src/store";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
 
-type Props = {};
-export default class App extends Component<Props> {
+// 打印初始状态
+console.log(myStore.getState())
+
+// 打印action后回调状态 并刷新UI
+
+myStore.subscribe(() => {
+       console.log(myStore.getState()) 
+        refresh()
+    }
+)
+
+function refresh() {
+  this.setState(myStore.getState())
+}
+
+
+export default class App extends Component{
+
+  constructor(props) {
+    super(props);
+    refresh= refresh.bind(this);
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Button
+          color = 'blue'
+          title = 'click to dispatch action from action creator'
+          onPress = {()=>{
+            myStore.dispatch(clickButtonAction())
+           }
+          }
+        ></Button>
+           <Text style={styles.welcome}>{myStore.getState().showText}</Text>
       </View>
     );
   }
